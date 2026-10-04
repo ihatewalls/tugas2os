@@ -13,6 +13,7 @@ int main(){
 	int arrivals[processes];
 	int bursts[processes];
 	int biggestarrival = 0;
+	int smallestarrival = 2147483647;
 	int biggestarrivalburst = 0;
 	for(int i = 0; i < processes; i++){
 		printf("P%d - Masukkan Arrival dan Burst Time: ", i+1);
@@ -21,11 +22,17 @@ int main(){
 			biggestarrival = arrivals[i];
 			biggestarrivalburst = bursts[i];
 		}
+		if(arrivals[i] < smallestarrival){
+			smallestarrival = arrivals[i];
+		}
 		total += bursts[i];
 		totalbursttime += bursts[i];
 	}
 	if(total < biggestarrival + biggestarrivalburst){
 		total = total + biggestarrival;
+	}
+	if(total < smallestarrival + totalbursttime){
+		total = smallestarrival + totalbursttime;
 	}
 								printf("=======================================================================\n"
 	"PROCESS INPUT\n"
@@ -118,13 +125,14 @@ int main(){
 					} 
 				}
 			}
+			int tempback = back;
 			if(tempbursts[queue[front]-1] != 0){
 				queue[back] = queue[front];	
 				back = (back+1)%processes;
 			} else {
 				completions[queue[front]-1] = timecount;
 			}
-			if((back - 1)%processes != front){
+			if(tempback != front){
 				queue[front] = 0;
 			}
 			front = (front+1)%processes;
@@ -149,6 +157,12 @@ int main(){
 	int basepadding = (71-burstamounts)/burstamounts;
 	char str2[100];
 	for(int i = 0; i < burstamounts; i++){
+		for(int j = 0; j < sizeof(downtime)/4; j++){
+			if(downtime[j] == othertimecounter){
+				printf("|  %*s", basepadding, "");
+				othertimecounter += downtimecounter;
+			}
+		}
 		char str[100];
 		snprintf(str, sizeof(str), "P%d", order[i]);
 		int left = (basepadding - strlen(str))/2;
@@ -156,26 +170,21 @@ int main(){
 		snprintf(str2, sizeof(str2), "%*s%s%*s",left, "", str, right, "");
 		printf("|%s",str2);
 		othertimecounter += timeorder[i];
-		for(int j = 0; j < sizeof(downtime)/4; j++){
-			if(downtime[j] == othertimecounter){
-				printf("|  %*s", basepadding, "");
-				othertimecounter += downtimecounter;
-			}
-		}
 	}
 	printf("|\n");
 	for(int i = 0; i < burstamounts; i++){
-		char str3[100];
-		snprintf(str3, sizeof(str3), "%d", gantttimecounter);
-		int padding = strlen(str2) - strlen(str3) + 1;
-		printf("%d%*s", gantttimecounter, padding, "");
-		gantttimecounter += timeorder[i];
 		for(int j = 0; j < sizeof(downtime)/4; j++){
 			if(downtime[j] == gantttimecounter){
 				printf("%d%*s", gantttimecounter, basepadding, "");
 				gantttimecounter += downtimecounter;
 			}
 		}
+		char str3[100];
+		snprintf(str3, sizeof(str3), "%d", gantttimecounter);
+		int padding = strlen(str2) - strlen(str3) + 1;
+		printf("%d%*s", gantttimecounter, padding, "");
+		gantttimecounter += timeorder[i];
+	
 	}
 	printf("%d\n", gantttimecounter);
 	printf("=======================================================================\n"
@@ -184,16 +193,16 @@ int main(){
 int anothercounter = 0;
 int preempcounter = 0;
 for(int i = 0; i< burstamounts;i++){
-	if(remainings[i] != 0){
-	printf("t=%d : quantum P%d habis (sisa BT=%d) -> READY\n", timeorder[i] + anothercounter, order[i], remainings[i]);
-	preempcounter++;
-	}
-	anothercounter += timeorder[i];
 	for(int j = 0; j < sizeof(downtime)/4; j++){
 			if(downtime[j] == anothercounter){
 				anothercounter += downtimecounter;
 			}
 		}
+	if(remainings[i] != 0){
+	printf("t=%d : quantum P%d habis (sisa BT=%d) -> READY\n", timeorder[i] + anothercounter, order[i], remainings[i]);
+	preempcounter++;
+	}
+	anothercounter += timeorder[i];
 }
 printf("Total Preemption: %d\n", preempcounter);
 printf("=======================================================================\n"
@@ -245,6 +254,11 @@ for(int i = 0; i < processes; i++){
 	printf("P%d : NEW -> READY (t=%d) -> ", i+1, arrivals[i]);
 	int counttime = 0;
 	for(int j = 0; j < burstamounts; j++){
+		for(int k = 0; k < sizeof(downtime)/4; k++){
+			if(downtime[k] == counttime){
+				counttime += downtimecounter;
+			}
+		}
 		if(i+1 == order[j]){
 			if(completions[i] - counttime > quantum){
 				printf("RUNNING (t=%d) -> READY (t=%d) -> ", counttime, counttime + 2);
@@ -253,11 +267,6 @@ for(int i = 0; i < processes; i++){
 			}
 		}
 		counttime += timeorder[j];
-		for(int k = 0; k < sizeof(downtime)/4; k++){
-			if(downtime[k] == counttime){
-				counttime += downtimecounter;
-			}
-		}
 	}
 }
 
