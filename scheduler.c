@@ -261,7 +261,7 @@ for(int i = 0; i < processes; i++){
 		}
 		if(i+1 == order[j]){
 			if(completions[i] - counttime > quantum){
-				printf("RUNNING (t=%d) -> READY (t=%d) -> ", counttime, counttime + 2);
+				printf("RUNNING (t=%d) -> READY (t=%d) -> ", counttime, counttime + quantum);
 			} else {
 				printf("RUNNING (t=%d) -> TERMINATED (t=%d)\n", counttime, completions[i]);
 			}
