@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
 int main(){
 	int processes;
 	int quantum;
@@ -7,17 +8,28 @@ int main(){
 	int totalbursttime = 0;
 	printf("Jumlah Proses: ");
 	scanf("%d", &processes);
-
-	printf("Time Quantum > 0: ");
-	scanf("%d", &quantum);
+	bool valid = false;
+	while(!valid){
+		printf("Time Quantum > 0: ");
+		scanf("%d", &quantum);
+		if(quantum > 0){
+			valid = true;
+		}
+	}
 	int arrivals[processes];
 	int bursts[processes];
 	int biggestarrival = 0;
 	int smallestarrival = 2147483647;
 	int biggestarrivalburst = 0;
 	for(int i = 0; i < processes; i++){
-		printf("P%d - Masukkan Arrival dan Burst Time: ", i+1);
-		scanf("%d %d", &arrivals[i], &bursts[i]);
+		valid = false;
+		while(!valid){
+			printf("P%d - Masukkan Arrival dan Burst Time: ", i+1);
+			scanf("%d %d", &arrivals[i], &bursts[i]);
+			if(arrivals[i] >=0 && bursts[i] >= 1){
+				valid = true;
+			}
+		}
 		if(arrivals[i] > biggestarrival){
 			biggestarrival = arrivals[i];
 			biggestarrivalburst = bursts[i];
@@ -152,6 +164,7 @@ int main(){
 			}
 		}
 	}
+	total = timecount;
 	int othertimecounter = 0;
 	int gantttimecounter = 0;
 	int basepadding = (71-burstamounts)/burstamounts;
