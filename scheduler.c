@@ -74,11 +74,15 @@ int main(){
 	int timeorder[burstamounts];
 	int completions[processes];
 	int downtime[biggestarrival];
+	int downtimes[biggestarrival];
 	int remainings[burstamounts];
 	for(int i = 0; i<sizeof(downtime)/4;i++){
 		downtime[i] = -1;
+		downtimes[i] = 0;
 	}
 	int downtimecounter = 0;
+	int downtimetimecounter = 0;
+	int downtimeamountcounter = 0;
 	int timecount = 0;
 	int count = 0;
 	int queue[processes];
@@ -173,6 +177,7 @@ int main(){
 			downtime[downtimecounter] = timecount;
 			timecount++;
 			downtimecounter++;
+			downtimetimecounter++;
 			for(int i = start; i < processes; i++){
 				if(arrivals[i] <= timecount){
 					if(tempbursts[i] != 0){
@@ -187,6 +192,9 @@ int main(){
 							back = (back+1)%processes;
 							initiated[start] = i+1;
 							start++;
+							downtimes[downtimeamountcounter] = downtimetimecounter;
+							downtimeamountcounter++;
+							downtimetimecounter = 0;
 						}
 					} 
 				}
@@ -196,13 +204,15 @@ int main(){
 	total = timecount;
 	int othertimecounter = 0;
 	int gantttimecounter = 0;
+	int downtimecountercounter = 0;
 	int basepadding = (71-burstamounts)/burstamounts;
 	char str2[100];
 	for(int i = 0; i < burstamounts; i++){
 		for(int j = 0; j < sizeof(downtime)/4; j++){
 			if(downtime[j] == othertimecounter){
 				printf("|  %*s", basepadding, "");
-				othertimecounter += downtimecounter;
+				othertimecounter += downtimes[downtimecountercounter];
+				downtimecountercounter = (downtimecountercounter + 1)%downtimeamountcounter;
 			}
 		}
 		char str[100];
@@ -218,7 +228,8 @@ int main(){
 		for(int j = 0; j < sizeof(downtime)/4; j++){
 			if(downtime[j] == gantttimecounter){
 				printf("%d%*s", gantttimecounter, basepadding, "");
-				gantttimecounter += downtimecounter;
+				gantttimecounter += downtimes[downtimecountercounter];
+				downtimecountercounter = (downtimecountercounter + 1)%downtimeamountcounter;
 			}
 		}
 		char str3[100];
@@ -237,7 +248,8 @@ int preempcounter = 0;
 for(int i = 0; i< burstamounts;i++){
 	for(int j = 0; j < sizeof(downtime)/4; j++){
 			if(downtime[j] == anothercounter){
-				anothercounter += downtimecounter;
+				anothercounter += downtimes[downtimecountercounter];
+				downtimecountercounter = (downtimecountercounter + 1)%downtimeamountcounter;
 			}
 		}
 	if(remainings[i] != 0){
@@ -298,7 +310,8 @@ for(int i = 0; i < processes; i++){
 	for(int j = 0; j < burstamounts; j++){
 		for(int k = 0; k < sizeof(downtime)/4; k++){
 			if(downtime[k] == counttime){
-				counttime += downtimecounter;
+				counttime += downtimes[downtimecountercounter];
+				downtimecountercounter = (downtimecountercounter + 1)%downtimeamountcounter;
 			}
 		}
 		if(i+1 == order[j]){
