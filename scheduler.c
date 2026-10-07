@@ -210,7 +210,9 @@ int main(){
 	for(int i = 0; i < burstamounts; i++){
 		for(int j = 0; j < sizeof(downtime)/4; j++){
 			if(downtime[j] == othertimecounter){
-				printf("|  %*s", basepadding, "");
+				int left = (basepadding - 4)/2;
+				int right = basepadding - 4 - left;
+				printf("|%*sIDLE%*s", left, "", right, "");
 				othertimecounter += downtimes[downtimecountercounter];
 				downtimecountercounter = (downtimecountercounter + 1)%downtimeamountcounter;
 			}
@@ -227,7 +229,7 @@ int main(){
 	for(int i = 0; i < burstamounts; i++){
 		for(int j = 0; j < sizeof(downtime)/4; j++){
 			if(downtime[j] == gantttimecounter){
-				printf("%d%*s", gantttimecounter, basepadding, "");
+				printf("%d%*s",gantttimecounter, basepadding, "");
 				gantttimecounter += downtimes[downtimecountercounter];
 				downtimecountercounter = (downtimecountercounter + 1)%downtimeamountcounter;
 			}
