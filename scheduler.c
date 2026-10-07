@@ -85,12 +85,14 @@ int main(){
 	int starts[processes];
 	int tempstarts[processes];
 	int waits[processes];
+	int initiated[processes];
 	for(int i = 0; i<processes; i++){
 		queue[i] = 0;
 		starts[i] = -1;
 		waits[i] = 0;
 		tempstarts[i] = -1;
 		completions[i] = 0;
+		initiated[i] = -1;
 	}
 	int front = 0;
 	int back = 0;
@@ -98,9 +100,18 @@ int main(){
 	for(int i = 0; i < processes; i++){
 		if(arrivals[i] <= timecount){
 			if(tempbursts[i] != 0){
-				queue[back] = i+1;
-				back = (back+1)%processes;
-				start++;
+				bool beeninitiated = false;
+				for(int j = 0; j < processes; j++){
+					if(initiated[j] == i+1){
+						beeninitiated = true;
+					}
+				}
+				if(!beeninitiated){
+					queue[back] = i+1;
+					back = (back+1)%processes;
+					initiated[start] = i+1;
+					start++;
+				}
 			} 
 		}
 	}
@@ -128,12 +139,21 @@ int main(){
 				tempbursts[queue[front]-1] = tempbursts[queue[front]-1] - quantum;
 				remainings[count] = tempbursts[queue[front]-1];
 			}
-			for(int i = start; i < processes; i++){
+			for(int i = 0; i < processes; i++){
 				if(arrivals[i] <= timecount){
 					if(tempbursts[i] != 0){
-						queue[back] = i+1;
-						back = (back+1)%processes;
-						start++;
+						bool beeninitiated = false;
+						for(int j = 0; j < processes; j++){
+							if(initiated[j] == i+1){
+								beeninitiated = true;
+							}
+						}
+						if(!beeninitiated){
+							queue[back] = i+1;
+							back = (back+1)%processes;
+							initiated[start] = i+1;
+							start++;
+						}
 					} 
 				}
 			}
@@ -156,9 +176,18 @@ int main(){
 			for(int i = start; i < processes; i++){
 				if(arrivals[i] <= timecount){
 					if(tempbursts[i] != 0){
-						queue[back] = i+1;
-						back = (back+1)%processes;
-						start++;
+						bool beeninitiated = false;
+						for(int j = 0; j < processes; j++){
+							if(initiated[j] == i+1){
+								beeninitiated = true;
+							}
+						}
+						if(!beeninitiated){
+							queue[back] = i+1;
+							back = (back+1)%processes;
+							initiated[start] = i+1;
+							start++;
+						}
 					} 
 				}
 			}
