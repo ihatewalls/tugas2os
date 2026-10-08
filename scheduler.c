@@ -210,9 +210,9 @@ int main(){
 	for(int i = 0; i < burstamounts; i++){
 		for(int j = 0; j < sizeof(downtime)/4; j++){
 			if(downtime[j] == othertimecounter){
-				int left = (basepadding - 4)/2;
-				int right = basepadding - 4 - left;
-				printf("|%*sIDLE%*s", left, "", right, "");
+				int left = (basepadding - 1)/2;
+				int right = basepadding - 1 - left;
+				printf("|%*sI%*s", left, "", right, "");
 				othertimecounter += downtimes[downtimecountercounter];
 				downtimecountercounter = (downtimecountercounter + 1)%downtimeamountcounter;
 			}
